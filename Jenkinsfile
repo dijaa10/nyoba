@@ -23,8 +23,8 @@ node {
                 sh '''
                 mkdir -p ~/.ssh
                 chmod 700 ~/.ssh
-                ssh-keyscan -H 172.20.209.222 >> ~/.ssh/known_hosts
-                rsync -rav --delete ./ dj@172.20.209.222:/home/dj/prod.kelasdevops.xyz/ \
+                ssh-keyscan -H 172.20.0.1 >> ~/.ssh/known_hosts
+                rsync -rav --delete ./ dj@172.20.0.1:/home/dj/prod.kelasdevops.xyz/ \
                 --exclude=.env \
                 --exclude=storage \
                 --exclude=.git
