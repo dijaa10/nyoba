@@ -18,18 +18,18 @@ node {
         }
     }
     stage('Deploy') {
-    sshagent (credentials: ['ssh-prod']) {
-        sh '''
-        mkdir -p ~/.ssh
-        chmod 700 ~/.ssh
-        ssh-keyscan -H 172.20.209.222 >> ~/.ssh/known_hosts
-        rsync -rav --delete \
-        -e "ssh -o StrictHostKeyChecking=no" \
-        ./ dj@172.20.209.222:/home/dj/prod.kelasdevops.xyz/ \
-        --exclude=.env \
-        --exclude=storage \
-        --exclude=.git
-        '''
+        sshagent (credentials: ['ssh-prod']) {
+            sh '''
+            mkdir -p ~/.ssh
+            chmod 700 ~/.ssh
+            ssh-keyscan -H 172.20.209.222 >> ~/.ssh/known_hosts
+            rsync -rav --delete \
+            -e "ssh -o StrictHostKeyChecking=no" \
+            ./ dj@172.20.209.222:/home/dj/prod.kelasdevops.xyz/ \
+            --exclude=.env \
+            --exclude=storage \
+            --exclude=.git
+            '''
+        }
     }
-}
 }
