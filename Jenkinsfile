@@ -18,23 +18,26 @@ node {
         }
     }
     stage('Deploy') {
-    sshagent (credentials: ['ssh-prod']) {
-        sh '''
-        # 1. Pastikan folder .ssh ada (pakai flag -p supaya tidak error kalau sudah ada)
-        mkdir -p ~/.ssh
-        chmod 700 ~/.ssh
-
-        # 2. Ambil fingerprint server tujuan supaya tidak muncul prompt (yes/no)
-        ssh-keyscan -H 172.20.209.222 >> ~/.ssh/known_hosts
-        
-        # 3. Jalankan rsync (Hapus baris apt-get install)
-        rsync -rav --delete \
-            -e "ssh -o StrictHostKeyChecking=no" \
-            ./ dj@172.20.209.222:/home/dj/prod.kelasdevops.xyz/ \
-            --exclude=.env \
-            --exclude=storage \
-            --exclude=.git
-        '''
+    // Kita pinjam container yang sudah ada rsync & ssh-nya
+    docker.image('instrumentisto/rsync-ssh').inside('-u root') {
+        sshagent (credentials: ['ssh-prod']) {
+            sh '''
+            # Buat folder ssh di dalam container sementara ini
+            mkdir -p ~/.ssh
+            chmod 700 ~/.ssh
+            
+            # Daftarkan IP server tujuan agar tidak tanya yes/no
+            ssh-keyscan -H 172.20.209.222 >> ~/.ssh/known_hosts
+            
+            # Jalankan rsync
+            rsync -rav --delete \
+                -e "ssh -o StrictHostKeyChecking=no" \
+                ./ dj@172.20.209.222:/home/dj/prod.kelasdevops.xyz/ \
+                --exclude=.env \
+                --exclude=storage \
+                --exclude=.git
+            '''
+        }
     }
 }
 }
