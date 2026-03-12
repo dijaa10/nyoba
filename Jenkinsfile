@@ -18,18 +18,18 @@ node {
         }
     }
     stage('Deploy') {
-        docker.image('agung3wi/alpine-rsync:1.1').inside('-u root') {
-            sshagent (credentials: ['ssh-prod']) {
-                sh '''
-                mkdir -p ~/.ssh
-                chmod 700 ~/.ssh
-                ssh-keyscan -H 172.20.209.222 >> ~/.ssh/known_hosts
-                rsync -rav --delete ./ dj@172.20.209.222:/home/dj/prod.kelasdevops.xyz/ \
-                --exclude=.env \
-                --exclude=storage \
-                --exclude=.git
-                '''
-            }
+    docker.image('agung3wi/alpine-rsync:1.1').inside('-u root --network host') {
+        sshagent (credentials: ['ssh-prod']) {
+            sh '''
+            mkdir -p ~/.ssh
+            chmod 700 ~/.ssh
+            ssh-keyscan -H 172.20.209.222 >> ~/.ssh/known_hosts
+            rsync -rav --delete ./ dj@172.20.209.222:/home/dj/prod.kelasdevops.xyz/ \
+            --exclude=.env \
+            --exclude=storage \
+            --exclude=.git
+            '''
         }
+    }
     }
 }
